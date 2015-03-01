@@ -16,6 +16,7 @@
   },
   "configSchema": "z-way-config-schema.coffee",
   "dependencies": {
+    "request-promise": "0.4.*"
   },
   "peerDependencies": {
     "pimatic": "0.8.*"

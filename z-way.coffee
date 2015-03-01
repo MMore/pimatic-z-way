@@ -1,49 +1,79 @@
-# #Plugin template
-
-# This is an plugin template and mini tutorial for creating pimatic plugins. It will explain the 
-# basics of how the plugin system works and how a plugin should look like.
-
-# ##The plugin code
-
-# Your plugin must export a single function, that takes one argument and returns a instance of
-# your plugin class. The parameter is an envirement object containing all pimatic related functions
-# and classes. See the [startup.coffee](http://sweetpi.de/pimatic/docs/startup.html) for details.
 module.exports = (env) ->
 
   # ###require modules included in pimatic
-  # To require modules that are included in pimatic use `env.require`. For available packages take 
+  # To require modules that are included in pimatic use `env.require`. For available packages take
   # a look at the dependencies section in pimatics package.json
 
-  # Require the  bluebird promise library
   Promise = env.require 'bluebird'
 
-  # Require the [cassert library](https://github.com/rhoot/cassert).
   assert = env.require 'cassert'
 
   # Include you own depencies with nodes global require function:
-  #  
+  #
   #     someThing = require 'someThing'
-  #  
+  #
+  rp = require 'request-promise'
 
   # ###MyPlugin class
   # Create a class that extends the Plugin class and implements the following functions:
-  class MyPlugin extends env.plugins.Plugin
+  class ZWayPlugin extends env.plugins.Plugin
 
     # ####init()
     # The `init` function is called by the framework to ask your plugin to initialise.
-    #  
+    #
     # #####params:
     #  * `app` is the [express] instance the framework is using.
     #  * `framework` the framework itself
-    #  * `config` the properties the user specified as config for your plugin in the `plugins` 
-    #     section of the config.json file 
-    #     
-    # 
+    #  * `config` the properties the user specified as config for your plugin in the `plugins`
+    #     section of the config.json file
+    #
+    #
     init: (app, @framework, @config) =>
-      env.logger.info("Hello World")
+      env.logger.info("initialized pimatic-z-way with hostname " + @config.hostname)
 
-  # ###Finally
-  # Create a instance of my plugin
-  myPlugin = new MyPlugin
-  # and return it to the framework.
-  return myPlugin
+      deviceConfigDef = require("./device-config-schema")
+      @framework.deviceManager.registerDeviceClass("ZWaySwitch", {
+        configDef: deviceConfigDef.ZWaySwitch,
+        createCallback: (config) => new ZWaySwitch(config, @config.hostname)
+      })
+
+  class ZWaySwitch extends env.devices.PowerSwitch
+
+    constructor: (@config, hostname) ->
+      @name = @config.name
+      @id = @config.id
+      @virtualDeviceId = @config.virtualDeviceId
+      @hostname = hostname
+
+      updateValue = =>
+        if @config.interval > 0
+          @getState().finally( =>
+            setTimeout(updateValue, @config.interval * 1000)
+          )
+
+      super()
+      updateValue()
+
+    changeStateTo: (state) ->
+      command = if state then "on" else "off"
+      address = "http://" + @hostname + ":8083/ZAutomation/api/v1/devices/" + @virtualDeviceId + "/command/" + command
+      console.log("trigger " + address)
+      if @state is state then return
+      return rp(address).then(console.dir).then( =>
+        @_setState(state)
+      )
+
+    getState: () ->
+      address = "http://" + @hostname + ":8083/ZAutomation/api/v1/devices/" + @virtualDeviceId
+      return rp(address).then(JSON.parse).then( (json) =>
+        state = json.data.metrics.level
+        @_setState(state == "on")
+        return @_state
+      ).catch( (e) =>
+        env.logger.error("state update failed with " + e.message)
+        return @_state
+      )
+
+
+  plugin = new ZWayPlugin
+  return plugin
