@@ -1,11 +1,11 @@
-{ "name": "pimatic-plugin-template",
+{ "name": "pimatic-z-way",
   "description": "The plugin description",
-  "author": "Your Name <you@example.com> (http://your-website)",
-  "main": "my-plugin",
+  "author": "Mathias Nestler <m@mathiasnestler.de> (http://mne.io)",
+  "main": "z-way",
   "files": [
-    "my-plugin.coffee",
+    "z-way.coffee",
     "README.md",
-    "my-plugin-config-schema.coffee"
+    "z-way-config-schema.coffee"
   ],
   "version": "0.8.0",
   "homepage": "http://your-plugin-website",
@@ -14,7 +14,7 @@
     "type": "git",
     "url": "git://github.com/pimatic/pimatic-plugin-template.git"
   },
-  "configSchema": "my-plugin-config-schema.coffee",
+  "configSchema": "z-way-config-schema.coffee",
   "dependencies": {
   },
   "peerDependencies": {
