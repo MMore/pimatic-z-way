@@ -1,17 +1,27 @@
-pimatic-plugin-template
+pimatic-z-way plugin
 =======================
 
-See the [development guide](http://pimatic.org/guide/development/required-skills-readings/) for
-usage.
+This is a pimatic plugin which allows you to control Z-Wave devices using [Z-Way](http://z-wave.me).
 
-Some Tips:
+Configuration
+-------------
+You can load the plugin by editing your `config.json` to include:
 
-###Adding package dependencies
-* You can add other package dependencies by running `npm install something --save`. With the `--save`
-  option npm will auto add the installed dependency in your `package.json`
-* You can always install all dependencies in the package.json with `npm install`
+    {
+       "plugin": "z-way"
+       "hostname": "10.10.7.46" // set hostname if necessary (localhost by default)
+    }
 
-###Commit your changes to git
-* Add all edited files with `git add file`. For example: `git add package.json` then commit you changes 
-  with `git commit`.
-* After that you can push you commited work to github: `git push`
+Devices can be defined by adding them to the `devices` section in the config file.
+Set the `class` attribute to `ZWaySwitch`. For example:
+
+    {
+      "class": "ZWaySwitch",
+      "id": "fibaro_plug",
+      "name": "WallPlug",
+      "virtualDeviceId": "ZWayVDev_zway_2-0-42",
+      "interval": "0"
+    }
+
+Figure the `virtualDeviceId` out by calling `curl http://HOSTNAME:8083/ZAutomation/api/v1/devices`.
+If the `interval` option is greater than 0 then the state of the device is updated automatically after X seconds.

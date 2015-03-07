@@ -1,5 +1,5 @@
 { "name": "pimatic-z-way",
-  "description": "The plugin description",
+  "description": "Plugin for controlling devices using Z-Way (z-wave.me)",
   "author": "Mathias Nestler <m@mathiasnestler.de> (http://mne.io)",
   "main": "z-way",
   "files": [
@@ -9,11 +9,10 @@
     "README.md"
   ],
   "version": "0.8.0",
-  "homepage": "http://your-plugin-website",
-  "private": true,
+  "homepage": "https://github.com/MMore/pimatic-z-way",
   "repository": {
     "type": "git",
-    "url": "git://github.com/pimatic/pimatic-plugin-template.git"
+    "url": "git://github.com/MMore/pimatic-z-way.git"
   },
   "configSchema": "z-way-config-schema.coffee",
   "dependencies": {
