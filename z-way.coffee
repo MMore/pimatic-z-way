@@ -28,23 +28,27 @@ module.exports = (env) ->
         configDef: deviceConfigDef.ZWaySwitch,
         createCallback: (config) => new ZWaySwitch(config)
       })
+      @framework.deviceManager.registerDeviceClass("ZWayPowerSensor", {
+        configDef: deviceConfigDef.ZWayPowerSensor,
+        createCallback: (config) => new ZWayPowerSensor(config)
+      })
 
     sendCommand: (virtualDeviceId, command) ->
       address = "http://" + @config.hostname + ":8083/ZAutomation/api/v1/devices/" + virtualDeviceId + "/command/" + command
-      env.logger.debug("send command " + address)
-      return rp(address).then(console.dir)
+      env.logger.debug("sending command " + address)
+      return rp(address)
 
     getDeviceDetails: (virtualDeviceId) ->
       address = "http://" + @config.hostname + ":8083/ZAutomation/api/v1/devices/" + virtualDeviceId
-      env.logger.debug("send command " + address)
+      env.logger.debug("fetching device details " + address)
       return rp(address).then(JSON.parse)
 
 
   class ZWaySwitch extends env.devices.PowerSwitch
 
     constructor: (@config) ->
-      @name = @config.name
       @id = @config.id
+      @name = @config.name
       @virtualDeviceId = @config.virtualDeviceId
 
       updateValue = =>
@@ -74,6 +78,39 @@ module.exports = (env) ->
         env.logger.error("state update failed with " + e.message)
         return @_state
       )
+
+
+  class ZWayPowerSensor extends env.devices.Sensor
+
+    constructor: (@config) ->
+      @id = @config.id
+      @name = @config.name
+      @virtualDeviceId = @config.virtualDeviceId
+
+      @attributes = {}
+      sensor = "power"
+      @attributes[sensor] = {}
+      @attributes[sensor].description = "Current Power Consumption"
+      @attributes[sensor].type = "number"
+
+      getter = ( =>
+        return plugin.getDeviceDetails(@virtualDeviceId).then( (json) =>
+          val = json.data.metrics.level
+          unit = json.data.metrics.scaleTitle
+          @attributes[sensor].unit = unit
+          return val
+        )
+      )
+
+      @_createGetter(sensor, getter)
+      setInterval( ( =>
+        getter().then( (value) =>
+          @emit sensor, value
+        ).catch( (error) =>
+          env.logger.error("error updating sensor value for #{sensor}", error.message)
+        )
+      ), @config.interval * 1000)
+      super()
 
 
   plugin = new ZWayPlugin

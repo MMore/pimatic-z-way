@@ -18,10 +18,17 @@ Set the `class` attribute to `ZWaySwitch`. For example:
     {
       "class": "ZWaySwitch",
       "id": "fibaro_plug",
-      "name": "WallPlug",
+      "name": "Wall Plug",
       "virtualDeviceId": "ZWayVDev_zway_2-0-42",
-      "interval": "0"
+      "interval": 0
+    },
+    {
+      "class": "ZWayPowerSensor",
+      "id": "fibaro_power_sensor",
+      "name": "Power Sensor",
+      "virtualDeviceId": "ZWayVDev_zway_2-0-43"
     }
 
+
 Figure the `virtualDeviceId` out by calling `curl http://HOSTNAME:8083/ZAutomation/api/v1/devices`.
-If the `interval` option is greater than 0 then the state of the device is updated automatically after X seconds.
+If the `interval` option is greater than 0 then the state of the device is updated automatically after the defined seconds. Sensors always should have a value greater than 0.
