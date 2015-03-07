@@ -3,9 +3,10 @@
   "author": "Mathias Nestler <m@mathiasnestler.de> (http://mne.io)",
   "main": "z-way",
   "files": [
+    "device-config-schema.coffee",
+    "z-way-config-schema.coffee",
     "z-way.coffee",
-    "README.md",
-    "z-way-config-schema.coffee"
+    "README.md"
   ],
   "version": "0.8.0",
   "homepage": "http://your-plugin-website",

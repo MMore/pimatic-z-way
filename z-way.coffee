@@ -3,19 +3,11 @@ module.exports = (env) ->
   # ###require modules included in pimatic
   # To require modules that are included in pimatic use `env.require`. For available packages take
   # a look at the dependencies section in pimatics package.json
-
   Promise = env.require 'bluebird'
-
   assert = env.require 'cassert'
 
-  # Include you own depencies with nodes global require function:
-  #
-  #     someThing = require 'someThing'
-  #
   rp = require 'request-promise'
 
-  # ###MyPlugin class
-  # Create a class that extends the Plugin class and implements the following functions:
   class ZWayPlugin extends env.plugins.Plugin
 
     # ####init()
@@ -34,16 +26,26 @@ module.exports = (env) ->
       deviceConfigDef = require("./device-config-schema")
       @framework.deviceManager.registerDeviceClass("ZWaySwitch", {
         configDef: deviceConfigDef.ZWaySwitch,
-        createCallback: (config) => new ZWaySwitch(config, @config.hostname)
+        createCallback: (config) => new ZWaySwitch(config)
       })
+
+    sendCommand: (virtualDeviceId, command) ->
+      address = "http://" + @config.hostname + ":8083/ZAutomation/api/v1/devices/" + virtualDeviceId + "/command/" + command
+      env.logger.debug("send command " + address)
+      return rp(address).then(console.dir)
+
+    getDeviceDetails: (virtualDeviceId) ->
+      address = "http://" + @config.hostname + ":8083/ZAutomation/api/v1/devices/" + virtualDeviceId
+      env.logger.debug("send command " + address)
+      return rp(address).then(JSON.parse)
+
 
   class ZWaySwitch extends env.devices.PowerSwitch
 
-    constructor: (@config, hostname) ->
+    constructor: (@config) ->
       @name = @config.name
       @id = @config.id
       @virtualDeviceId = @config.virtualDeviceId
-      @hostname = hostname
 
       updateValue = =>
         if @config.interval > 0
@@ -55,17 +57,16 @@ module.exports = (env) ->
       updateValue()
 
     changeStateTo: (state) ->
-      command = if state then "on" else "off"
-      address = "http://" + @hostname + ":8083/ZAutomation/api/v1/devices/" + @virtualDeviceId + "/command/" + command
-      console.log("trigger " + address)
       if @state is state then return
-      return rp(address).then(console.dir).then( =>
+      command = if state then "on" else "off"
+      return plugin.sendCommand(@virtualDeviceId, command).then( =>
         @_setState(state)
+      ).catch( (e) =>
+        env.logger.error("state change failed with " + e.message)
       )
 
     getState: () ->
-      address = "http://" + @hostname + ":8083/ZAutomation/api/v1/devices/" + @virtualDeviceId
-      return rp(address).then(JSON.parse).then( (json) =>
+      return plugin.getDeviceDetails(@virtualDeviceId).then( (json) =>
         state = json.data.metrics.level
         @_setState(state == "on")
         return @_state
