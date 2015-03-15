@@ -28,6 +28,10 @@ module.exports = (env) ->
         configDef: deviceConfigDef.ZWaySwitch,
         createCallback: (config) => new ZWaySwitch(config)
       })
+      @framework.deviceManager.registerDeviceClass("ZWayDimmer", {
+        configDef: deviceConfigDef.ZWayDimmer,
+        createCallback: (config) => new ZWayDimmer(config)
+      })
       @framework.deviceManager.registerDeviceClass("ZWayPowerSensor", {
         configDef: deviceConfigDef.ZWayPowerSensor,
         createCallback: (config) => new ZWayPowerSensor(config)
@@ -77,6 +81,41 @@ module.exports = (env) ->
       ).catch( (e) =>
         env.logger.error("state update failed with " + e.message)
         return @_state
+      )
+
+
+  class ZWayDimmer extends env.devices.DimmerActuator
+
+    constructor: (@config) ->
+      @id = @config.id
+      @name = @config.name
+      @virtualDeviceId = @config.virtualDeviceId
+
+      updateValue = =>
+        if @config.interval > 0
+          @getDimlevel().finally( =>
+            setTimeout(updateValue, @config.interval * 1000)
+          )
+
+      super()
+      updateValue()
+
+    changeDimlevelTo: (level) ->
+      if @_dimlevel is level then return
+      return plugin.sendCommand(@virtualDeviceId, "exact?level=#{level}").then( =>
+        @_setDimlevel(level)
+      ).catch( (e) =>
+        env.logger.error("dim level change failed with #{e.message}")
+      )
+
+    getDimlevel: () ->
+      return plugin.getDeviceDetails(@virtualDeviceId).then( (json) =>
+        level = json.data.metrics.level
+        @_setDimlevel(level)
+        return @_dimlevel
+      ).catch( (e) =>
+        env.logger.error("dim level update failed with #{e.message}")
+        return @_dimlevel
       )
 
 

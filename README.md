@@ -13,13 +13,20 @@ You can load the plugin by editing your `config.json` to include:
     }
 
 Devices can be defined by adding them to the `devices` section in the config file.
-Set the `class` attribute to `ZWaySwitch`. For example:
+Set the `class` attribute to `ZWaySwitch`, `ZWayDimmer` or `ZWayPowerSensor`. For example:
 
     {
       "class": "ZWaySwitch",
       "id": "fibaro_plug",
       "name": "Wall Plug",
       "virtualDeviceId": "ZWayVDev_zway_2-0-42",
+      "interval": 0
+    },
+    {
+      "class": "ZWayDimmer",
+      "id": "fibaro_dimmer",
+      "name": "Dimmer",
+      "virtualDeviceId": "ZWayVDev_zway_2-0-44",
       "interval": 0
     },
     {
