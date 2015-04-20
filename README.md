@@ -8,7 +8,7 @@ Configuration
 You can load the plugin by editing your `config.json` to include:
 
     {
-       "plugin": "z-way"
+       "plugin": "z-way",
        "hostname": "10.10.7.46" // set hostname if necessary (localhost by default)
     }
 
