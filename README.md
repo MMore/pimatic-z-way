@@ -39,3 +39,13 @@ Set the `class` attribute to `ZWaySwitch`, `ZWayDimmer` or `ZWayPowerSensor`. Fo
 
 Figure the `virtualDeviceId` out by calling `curl http://HOSTNAME:8083/ZAutomation/api/v1/devices`.
 If the `interval` option is greater than 0 then the state of the device is updated automatically after the defined seconds. Sensors always should have a value greater than 0.
+
+Authentication
+--------------
+
+Starting with Z-Way v2.0.1 authentication can become an [issue](https://github.com/Z-Wave-Me/zwave-smarthome/issues/22) for you. There must be a user that has access to your devices.
+
+1. Go to http://HOSTNAME:8083/smarthome/ 
+2. Assign your devices to room(s).
+3. In User management allow the 'Local User' to access your rooms.
+4. If you do not use the default 'localhost' as hostname, create a new anonymous user and allow him access to your rooms.
