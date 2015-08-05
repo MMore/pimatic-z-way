@@ -164,6 +164,7 @@ module.exports = (env) ->
         @_contact = lastState?.contact?.value or false
 
         @readContactValue()
+
         setInterval( ( => @readContactValue().catch( (error) =>
                 env.logger.error("error updating sensor value ", error.message)
             )
