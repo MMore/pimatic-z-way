@@ -36,6 +36,10 @@ module.exports = (env) ->
         configDef: deviceConfigDef.ZWayPowerSensor,
         createCallback: (config) => new ZWayPowerSensor(config)
       })
+      @framework.deviceManager.registerDeviceClass("ZWayDoorWindowSensor", {
+        configDef: deviceConfigDef.ZWayPowerSensor,
+        createCallback: (config) => new ZWayPowerSensor(config)
+      })
 
     sendCommand: (virtualDeviceId, command) ->
       address = "http://" + @config.hostname + ":8083/ZAutomation/api/v1/devices/" + virtualDeviceId + "/command/" + command
