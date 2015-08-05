@@ -37,8 +37,8 @@ module.exports = (env) ->
         createCallback: (config) => new ZWayPowerSensor(config)
       })
       @framework.deviceManager.registerDeviceClass("ZWayDoorWindowSensor", {
-        configDef: deviceConfigDef.ZWayPowerSensor,
-        createCallback: (config) => new ZWayPowerSensor(config)
+        configDef: deviceConfigDef.ZWayDoorWindowSensor,
+        createCallback: (config) => new ZWayDoorWindowSensor(config)
       })
 
     sendCommand: (virtualDeviceId, command) ->
