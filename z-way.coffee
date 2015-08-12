@@ -40,6 +40,10 @@ module.exports = (env) ->
         configDef: deviceConfigDef.ZWayDoorWindowSensor,
         createCallback: (config) => new ZWayDoorWindowSensor(config)
       })
+      @framework.deviceManager.registerDeviceClass("ZWayTemperatureSensor", {
+        configDef: deviceConfigDef.ZWayTemperatureSensor,
+        createCallback: (config) => new ZWayTemperatureSensor(config)
+      })
 
     sendCommand: (virtualDeviceId, command) ->
       address = "http://" + @config.hostname + ":8083/ZAutomation/api/v1/devices/" + virtualDeviceId + "/command/" + command
@@ -186,6 +190,39 @@ module.exports = (env) ->
       )
 
     getContact: () -> if @_contact? then Promise.resolve(@_contact) else @readContactValue()
+
+  class ZWayTemperatureSensor extends env.devices.TemperatureSensor
+    temperature: null
+
+    constructor: (@config) ->
+      @id = @config.id
+      @name = @config.name
+      @virtualDeviceId = @config.virtualDeviceId
+
+      @attributes = {}
+      sensor = "temperature"
+      @attributes[sensor] = {}
+      @attributes[sensor].description = "Current Room Temperature"
+      @attributes[sensor].type = "number"
+
+      getter = ( =>
+        return plugin.getDeviceDetails(@virtualDeviceId).then( (json) =>
+          val = json.data.metrics.level
+          unit = json.data.metrics.scaleTitle
+          @attributes[sensor].unit = unit
+          return val
+        )
+      )
+
+      @_createGetter(sensor, getter)
+      setInterval( ( =>
+        getter().then( (value) =>
+          @emit sensor, value
+        ).catch( (error) =>
+          env.logger.error("error updating sensor value for #{sensor}", error.message)
+        )
+      ), @config.interval * 1000)
+      super()
 
   plugin = new ZWayPlugin
   return plugin
