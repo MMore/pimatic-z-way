@@ -1,12 +1,12 @@
 module.exports = (env) ->
 
-  # ###require modules included in pimatic
-  # To require modules that are included in pimatic use `env.require`. For available packages take
-  # a look at the dependencies section in pimatics package.json
+# ###require modules included in pimatic
+# To require modules that are included in pimatic use `env.require`. For available packages take
+# a look at the dependencies section in pimatics package.json
   Promise = env.require 'bluebird'
   assert = env.require 'cassert'
 
-  rp = require 'request-promise'
+  rp = env.require 'request-promise'
 
   class ZWayPlugin extends env.plugins.Plugin
 
@@ -158,34 +158,32 @@ module.exports = (env) ->
   class ZWayDoorWindowSensor extends env.devices.ContactSensor
 
     constructor: (@config, lastState) ->
-        @id = @config.id
-        @name = @config.name
-        @virtualDeviceId = @config.virtualDeviceId
-        @_contact = lastState?.contact?.value or false
+      @id = @config.id
+      @name = @config.name
+      @virtualDeviceId = @config.virtualDeviceId
+      @_contact = lastState?.contact?.value or false
 
-        @readContactValue()
-
-        setInterval( ( => @readContactValue().catch( (error) =>
-                env.logger.error("error updating sensor value ", error.message)
-            )
-        ), @config.interval * 1000)
-        window.onload = -> @readContactValue()
-        super()
+      @readContactValue()
+      setInterval( ( => @readContactValue().catch( (error) =>
+        env.logger.error("error updating sensor value ", error.message)
+      )
+      ), @config.interval * 1000)
+      super()
 
     setContactValue: (value) ->
-        assert value is 1 or value is 0
-        state = (if value is 1 then true else false)
-        if @config.inverted then state = not state
-        @_setContact state
+      assert value is 1 or value is 0
+      state = (if value is 1 then true else false)
+      if @config.inverted then state = not state
+      @_setContact state
 
     readContactValue: ->
-        return plugin.getDeviceDetails(@virtualDeviceId).then( (json) =>
-            val = json.data.metrics.level
-            value = 0
-            if val is "on" then value = 1
-            @setContactValue value
-            return @_contact
-        )
+      return plugin.getDeviceDetails(@virtualDeviceId).then( (json) =>
+        val = json.data.metrics.level
+        value = 0
+        if val is "on" then value = 1
+        @setContactValue value
+        return @_contact
+      )
 
     getContact: () -> if @_contact? then Promise.resolve(@_contact) else @readContactValue()
 
