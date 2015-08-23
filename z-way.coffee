@@ -65,6 +65,7 @@ module.exports = (env) ->
 
       updateValue = =>
         if @config.interval > 0
+          @updateState()
           @getState().finally( =>
             setTimeout(updateValue, @config.interval * 1000)
           )
@@ -77,14 +78,27 @@ module.exports = (env) ->
       command = if state then "on" else "off"
       return plugin.sendCommand(@virtualDeviceId, command).then( =>
         @_setState(state)
+        #1 seconds to wait before the switch status is read
+        for x in [1..4]
+          do (x) ->
+            setTimeout ->
+              console.log x
+            , 250
+        #get switch status from zway
+        @getState()
       ).catch( (e) =>
         env.logger.error("state change failed with " + e.message)
       )
+
+    updateState: ()->
+      command = "update"
+      plugin.sendCommand(@virtualDeviceId, command)
 
     getState: () ->
       return plugin.getDeviceDetails(@virtualDeviceId).then( (json) =>
         state = json.data.metrics.level
         @_setState(state == "on")
+        env.logger.error("Aktueller Zustand " + state)
         return @_state
       ).catch( (e) =>
         env.logger.error("state update failed with " + e.message)
