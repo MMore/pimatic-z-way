@@ -55,6 +55,10 @@ module.exports = (env) ->
       env.logger.debug("fetching device details " + address)
       return rp(address).then(JSON.parse)
 
+    sleep: (ms) ->
+      start = new Date().getTime()
+      continue while new Date().getTime() - start < ms
+
 
   class ZWaySwitch extends env.devices.PowerSwitch
 
@@ -78,12 +82,8 @@ module.exports = (env) ->
       command = if state then "on" else "off"
       return plugin.sendCommand(@virtualDeviceId, command).then( =>
         @_setState(state)
-        #1 seconds to wait before the switch status is read
-        for x in [1..4]
-          do (x) ->
-            setTimeout ->
-              console.log x
-            , 250
+        #2 seconds to wait before the switch status is read
+        plugin.sleep 2000
         #get switch status from zway
         @getState()
       ).catch( (e) =>
