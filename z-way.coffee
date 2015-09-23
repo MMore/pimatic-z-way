@@ -98,7 +98,6 @@ module.exports = (env) ->
       return plugin.getDeviceDetails(@virtualDeviceId).then( (json) =>
         state = json.data.metrics.level
         @_setState(state == "on")
-        env.logger.error("Aktueller Zustand " + state)
         return @_state
       ).catch( (e) =>
         env.logger.error("state update failed with " + e.message)
