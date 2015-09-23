@@ -36,4 +36,32 @@ module.exports = {
         type: "number"
         default: 60
   }
+  ZWayDoorWindowSensor: {
+    title: "ZWayDoorWindowSensor config options"
+    type: "object"
+    properties:
+      virtualDeviceId:
+        description: "Virtual Device ID (call `curl http://HOSTNAME:8083/ZAutomation/api/v1/devices` for a list)"
+        type: "string"
+      interval:
+        description: "Time interval (in s) after an update is requested."
+        type: "number"
+        default: 2
+      inverted:
+        description: "Sets 1 to opend and 0 to closed"
+        type: "boolean"
+        default: false
+  }
+  ZWayTemperatureSensor: {
+    title: "ZWayTemperatureSensor config options"
+    type: "object"
+    properties:
+      virtualDeviceId:
+        description: "Virtual Device ID (call `curl http://HOSTNAME:8083/ZAutomation/api/v1/devices` for a list)"
+        type: "string"
+      interval:
+        description: "Time interval (in s) after an update is requested."
+        type: "number"
+        default: 60
+  }
 }
