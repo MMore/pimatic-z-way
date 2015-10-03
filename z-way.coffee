@@ -250,8 +250,8 @@ module.exports = (env) ->
       @virtualDeviceId = @config.virtualDeviceId
       @_presence = lastState?.presence?.value or false
 
-      @readContactValue()
-      setInterval( ( => @readContactValue().catch( (error) =>
+      @readPresenceValue()
+      setInterval( ( => @readPresenceValue().catch( (error) =>
         env.logger.error("error updating sensor value ", error.message)
       )
       ), @config.interval * 1000)
