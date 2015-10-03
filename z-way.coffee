@@ -44,6 +44,10 @@ module.exports = (env) ->
         configDef: deviceConfigDef.ZWayTemperatureSensor,
         createCallback: (config) => new ZWayTemperatureSensor(config)
       })
+      @framework.deviceManager.registerDeviceClass("ZWayMotionSensor", {
+        configDef: deviceConfigDef.ZWayMotionSensor,
+        createCallback: (config) => new ZWayMotionSensor(config)
+      })
 
     sendCommand: (virtualDeviceId, command) ->
       address = "http://" + @config.hostname + ":8083/ZAutomation/api/v1/devices/" + virtualDeviceId + "/command/" + command
@@ -237,6 +241,36 @@ module.exports = (env) ->
         )
       ), @config.interval * 1000)
       super()
+
+  class ZWayMotionSensor extends env.devices.PresenceSensor
+
+    constructor: (@config, lastState) ->
+      @id = @config.id
+      @name = @config.name
+      @virtualDeviceId = @config.virtualDeviceId
+      @_presence = lastState?.presence?.value or false
+
+      @readContactValue()
+      setInterval( ( => @readContactValue().catch( (error) =>
+        env.logger.error("error updating sensor value ", error.message)
+      )
+      ), @config.interval * 1000)
+      super()
+
+    setPresenceValue: (value) ->
+      assert value is 1 or value is 0
+      state = (if value is 1 then true else false)
+      if @config.inverted then state = not state
+      @_setPresence state
+
+    readPresenceValue: ->
+      return plugin.getDeviceDetails(@virtualDeviceId).then( (json) =>
+        val = json.data.metrics.level
+        value = 0
+        if val is "on" then value = 1
+        @setPresenceValue value
+        return @_presence
+      )
 
   plugin = new ZWayPlugin
   return plugin
