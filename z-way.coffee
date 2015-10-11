@@ -78,7 +78,7 @@ module.exports = (env) ->
       updateValue()
 
     changeStateTo: (state) ->
-      if @state is state then return
+      if @state is state then return Promise.resolve()
       command = if state then "on" else "off"
       return plugin.sendCommand(@virtualDeviceId, command).then( =>
         @_setState(state)
@@ -122,7 +122,7 @@ module.exports = (env) ->
       updateValue()
 
     changeDimlevelTo: (level) ->
-      if @_dimlevel is level then return
+      if @_dimlevel is level then return Promise.resolve()
       return plugin.sendCommand(@virtualDeviceId, "exact?level=#{level}").then( =>
         @_setDimlevel(level)
       ).catch( (e) =>
