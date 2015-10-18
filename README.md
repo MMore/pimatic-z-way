@@ -46,6 +46,12 @@ Set the `class` attribute to one of the following classes. For example:
       "id": "fibaro_temp_sensor",
       "name": "Window Sensor",
       "virtualDeviceId": "ZWayVDev_zway_2-0-46"
+    },
+    {
+      "class": "ZWayMotionSensor",
+      "id": "fibaro_motion_sensor",
+      "name": "Motion Sensor",
+      "virtualDeviceId": "ZWayVDev_zway_2-0-47"
     }
 
 
