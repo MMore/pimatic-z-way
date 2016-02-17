@@ -1,6 +1,11 @@
-{ "name": "pimatic-z-way",
+{
+  "name": "pimatic-z-way",
   "description": "Plugin for controlling devices using Z-Way (z-wave.me)",
-  "author": "Mathias Nestler <m@mathiasnestler.de> (http://mne.io)",
+  "author": {
+    "name": "Mathias Nestler",
+    "email": "m@mathiasnestler.de",
+    "url": "http://mne.io"
+  },
   "main": "z-way",
   "files": [
     "device-config-schema.coffee",
@@ -8,7 +13,7 @@
     "z-way.coffee",
     "README.md"
   ],
-  "version": "1.0.1",
+  "version": "1.1.0",
   "homepage": "https://github.com/MMore/pimatic-z-way",
   "repository": {
     "type": "git",
@@ -24,5 +29,31 @@
   "engines": {
     "node": ">0.8.x",
     "npm": ">1.1.x"
-  }
+  },
+  "gitHead": "615fcd07d357f0bb7502599440652da7c82bdbc3",
+  "bugs": {
+    "url": "https://github.com/MMore/pimatic-z-way/issues"
+  },
+  "_id": "pimatic-z-way@1.1.0",
+  "scripts": {},
+  "_shasum": "a2ea271675287f3b0bce421768422eb4e28dcf5c",
+  "_from": "pimatic-z-way@",
+  "_npmVersion": "2.1.4",
+  "_nodeVersion": "0.10.32",
+  "_npmUser": {
+    "name": "mathias.nestler",
+    "email": "m@mathiasnestler.de"
+  },
+  "maintainers": [
+    {
+      "name": "mathias.nestler",
+      "email": "m@mathiasnestler.de"
+    }
+  ],
+  "dist": {
+    "shasum": "a2ea271675287f3b0bce421768422eb4e28dcf5c",
+    "tarball": "http://registry.npmjs.org/pimatic-z-way/-/pimatic-z-way-1.1.0.tgz"
+  },
+  "directories": {},
+  "_resolved": "https://registry.npmjs.org/pimatic-z-way/-/pimatic-z-way-1.1.0.tgz"
 }

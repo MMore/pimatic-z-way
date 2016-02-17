@@ -48,6 +48,10 @@ module.exports = (env) ->
         configDef: deviceConfigDef.ZWayMotionSensor,
         createCallback: (config) => new ZWayMotionSensor(config)
       })
+      @framework.deviceManager.registerDeviceClass("ZWayShutterController", {
+        configDef: deviceConfigDef.ZWayShutterController,
+        createCallback: (config) => new ZWayShutterController(config)
+      })
 
     sendCommand: (virtualDeviceId, command) ->
       address = "http://" + @config.hostname + ":8083/ZAutomation/api/v1/devices/" + virtualDeviceId + "/command/" + command
@@ -61,7 +65,7 @@ module.exports = (env) ->
 
     sleep: (ms) ->
       start = new Date().getTime()
-      continue while new Date().getTime() - start < ms
+        continue while new Date().getTime() - start < ms
 
 
   class ZWaySwitch extends env.devices.PowerSwitch
@@ -82,7 +86,7 @@ module.exports = (env) ->
       updateValue()
 
     changeStateTo: (state) ->
-      if @state is state then return
+      if @state is state then return Promise.resolve()
       command = if state then "on" else "off"
       return plugin.sendCommand(@virtualDeviceId, command).then( =>
         @_setState(state)
@@ -126,7 +130,7 @@ module.exports = (env) ->
       updateValue()
 
     changeDimlevelTo: (level) ->
-      if @_dimlevel is level then return
+      if @_dimlevel is level then return Promise.resolve()
       return plugin.sendCommand(@virtualDeviceId, "exact?level=#{level}").then( =>
         @_setDimlevel(level)
       ).catch( (e) =>
@@ -269,6 +273,78 @@ module.exports = (env) ->
         if val is "on" then value = 1
         @setPresenceValue value
         return @_presence
+      )
+
+  class ZWayShutterController extends env.devices.ShutterController
+
+    constructor: (@config, lastState) ->
+      @id = @config.id
+      @name = @config.name
+      @_position = lastState?.position?.value or 'stopped'
+      @virtualDeviceId = @config.virtualDeviceId
+
+      updateValue = =>
+        if @config.interval > 0
+          @getPosition().finally( =>
+            setTimeout(updateValue, @config.interval * 1000)
+          )
+
+      super()
+      updateValue()
+
+    stop: ->
+      if @_position is 'stopped' then return Promise.resolve()
+      return plugin.sendCommand(@virtualDeviceId, 'stop').then( =>
+        @_lastSendTime = new Date().getTime()
+        @_setPosition('stopped')
+        @emit "position", @_position
+      ).catch( (e) =>
+        env.logger.error("stop failed with " + e.message)
+      )
+
+    moveUp: ->
+      if @_position is 'up' then return Promise.resolve()
+      return plugin.sendCommand(@virtualDeviceId, 'exact?level=99').then( =>
+        @_lastSendTime = new Date().getTime()
+        @_setPosition('up')
+        @emit "position", @_position
+      ).catch( (e) =>
+        env.logger.error("move up failed with " + e.message)
+      )
+
+    moveDown: ->
+      if @_position is 'down' then return Promise.resolve()
+      return plugin.sendCommand(@virtualDeviceId, 'exact?level=0').then( =>
+        @_lastSendTime = new Date().getTime()
+        @_setPosition('down')
+        @emit "position", @_position
+      ).catch( (e) =>
+        env.logger.error("move down failed with " + e.message)
+      )
+
+    moveToPosition: (position) ->
+      if position is @_position then return Promise.resolve()
+      if  position is 'stopped' then return @stop()
+      else
+        if position is 'up' then return @moveUp()
+        else
+          if position is 'down' then return @moveDown()
+
+    getPosition: () ->
+      return plugin.getDeviceDetails(@virtualDeviceId).then( (json) =>
+        level = json.data.metrics.level
+        if level is 0 then positionTemp = 'down'
+        else
+          if level is 99 then positionTemp = 'up'
+          else
+            positionTemp = 'stopped'
+
+        @_setPosition(positionTemp)
+        @emit "position", @_position
+        return @_position
+      ).catch( (e) =>
+        env.logger.error("position update failed with #{e.message}")
+        return @_dimlevel
       )
 
   plugin = new ZWayPlugin
