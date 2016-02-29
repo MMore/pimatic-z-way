@@ -73,7 +73,6 @@ module.exports = (env) ->
 
       updateValue = =>
         if @config.interval > 0
-          @updateState()
           @getState().finally( =>
             setTimeout(updateValue, @config.interval * 1000)
           )
@@ -93,10 +92,6 @@ module.exports = (env) ->
       ).catch( (e) =>
         env.logger.error("state change failed with " + e.message)
       )
-
-    updateState: ()->
-      command = "update"
-      plugin.sendCommand(@virtualDeviceId, command)
 
     getState: () ->
       return plugin.getDeviceDetails(@virtualDeviceId).then( (json) =>
