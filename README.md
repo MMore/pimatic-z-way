@@ -39,7 +39,7 @@ Set the `class` attribute to one of the following classes. For example:
       "class": "ZWayLuminiscenceSensor",
       "id": "fibaro_luminiscence_sensor",
       "name": "Luminiscence Sensor",
-      "virtualDeviceId": "ZWayVDev_zway_2-0-48"
+      "virtualDeviceId": "ZWayVDev_zway_2-0-49"
     },
     {
       "class": "ZWayDoorWindowSensor",
@@ -58,6 +58,12 @@ Set the `class` attribute to one of the following classes. For example:
       "id": "fibaro_motion_sensor",
       "name": "Motion Sensor",
       "virtualDeviceId": "ZWayVDev_zway_2-0-47"
+    },
+    {
+      "class": "ZWayShutterController",
+      "id": "fibaro_roller_shutter",
+      "name": "Roller Shutter",
+      "virtualDeviceId": "ZWayVDev_zway_2-0-48"
     }
 
 
