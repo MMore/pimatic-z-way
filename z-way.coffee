@@ -69,7 +69,7 @@ module.exports = (env) ->
 
     sleep: (ms) ->
       start = new Date().getTime()
-        continue while new Date().getTime() - start < ms
+      continue while new Date().getTime() - start < ms
 
 
   class ZWaySwitch extends env.devices.PowerSwitch
