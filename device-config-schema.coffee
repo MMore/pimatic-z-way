@@ -92,4 +92,16 @@ module.exports = {
         type: "boolean"
         default: false
   }
+  ZWayShutterController: {
+    title: "ZWayShutterController config options"
+    type: "object"
+    properties:
+      virtualDeviceId:
+        description: "Virtual Device ID (call `curl http://HOSTNAME:8083/ZAutomation/api/v1/devices` for a list)"
+        type: "string"
+      interval:
+        description: "Time interval (in s) after an update is requested."
+        type: "number"
+        default: 2
+  }
 }

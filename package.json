@@ -1,6 +1,11 @@
-{ "name": "pimatic-z-way",
+{
+  "name": "pimatic-z-way",
   "description": "Plugin for controlling devices using Z-Way (z-wave.me)",
-  "author": "Mathias Nestler <m@mathiasnestler.de> (http://mne.io)",
+  "author": {
+    "name": "Mathias Nestler",
+    "email": "m@mathiasnestler.de",
+    "url": "http://mne.io"
+  },
   "main": "z-way",
   "files": [
     "device-config-schema.coffee",
@@ -24,5 +29,22 @@
   "engines": {
     "node": ">0.8.x",
     "npm": ">1.1.x"
-  }
+  },
+  "bugs": {
+    "url": "https://github.com/MMore/pimatic-z-way/issues"
+  },
+  "scripts": {},
+  "_from": "pimatic-z-way@",
+  "_npmVersion": "2.1.4",
+  "_nodeVersion": "0.10.32",
+  "_npmUser": {
+    "name": "mathias.nestler",
+    "email": "m@mathiasnestler.de"
+  },
+  "maintainers": [
+    {
+      "name": "mathias.nestler",
+      "email": "m@mathiasnestler.de"
+    }
+  ]
 }
