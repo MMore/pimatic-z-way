@@ -82,7 +82,7 @@ module.exports = (env) ->
       updateValue = =>
         if @config.interval > 0
           @getState().finally( =>
-            setTimeout(updateValue, @config.interval * 1000)
+            @_updateInterval = setTimeout(updateValue, @config.interval * 1000)
           )
 
       super()
@@ -110,6 +110,10 @@ module.exports = (env) ->
         env.logger.error("state update failed with " + e.message)
         return @_state
       )
+    
+    destroy: ->
+      clearTimeout(@_updateInterval)
+      super()
 
 
   class ZWayDimmer extends env.devices.DimmerActuator
@@ -122,7 +126,7 @@ module.exports = (env) ->
       updateValue = =>
         if @config.interval > 0
           @getDimlevel().finally( =>
-            setTimeout(updateValue, @config.interval * 1000)
+            @_updateInterval = setTimeout(updateValue, @config.interval * 1000)
           )
 
       super()
@@ -145,7 +149,10 @@ module.exports = (env) ->
         env.logger.error("dim level update failed with #{e.message}")
         return @_dimlevel
       )
-
+    
+    destroy: ->
+      clearTimeout(@_updateInterval)
+      super()
 
   class ZWayPowerSensor extends env.devices.Sensor
 
@@ -170,13 +177,17 @@ module.exports = (env) ->
       )
 
       @_createGetter(sensor, getter)
-      setInterval( ( =>
+      @_updateInterval = setInterval( ( =>
         getter().then( (value) =>
           @emit sensor, value
         ).catch( (error) =>
           env.logger.error("error updating sensor value for #{sensor}", error.message)
         )
       ), @config.interval * 1000)
+      super()
+    
+    destroy: ->
+      clearTimeout(@_updateInterval)
       super()
 
   class ZWayDoorWindowSensor extends env.devices.ContactSensor
@@ -188,7 +199,7 @@ module.exports = (env) ->
       @_contact = lastState?.contact?.value or false
 
       @readContactValue()
-      setInterval( ( => @readContactValue().catch( (error) =>
+      @_updateInterval = setInterval( ( => @readContactValue().catch( (error) =>
         env.logger.error("error updating sensor value ", error.message)
       )
       ), @config.interval * 1000)
@@ -210,6 +221,10 @@ module.exports = (env) ->
       )
 
     getContact: () -> if @_contact? then Promise.resolve(@_contact) else @readContactValue()
+    
+    destroy: ->
+      clearTimeout(@_updateInterval)
+      super()
 
   class ZWayTemperatureSensor extends env.devices.TemperatureSensor
     temperature: null
@@ -230,13 +245,17 @@ module.exports = (env) ->
       )
 
       @_createGetter(sensor, getter)
-      setInterval( ( =>
+      @_updateInterval = setInterval( ( =>
         getter().then( (value) =>
           @emit sensor, value
         ).catch( (error) =>
           env.logger.error("error updating sensor value for #{sensor}", error.message)
         )
       ), @config.interval * 1000)
+      super()
+      
+    destroy: ->
+      clearTimeout(@_updateInterval)
       super()
 
   class ZWayLuminiscenceSensor extends env.devices.Sensor
@@ -270,6 +289,10 @@ module.exports = (env) ->
         )
       ), @config.interval * 1000)
       super()
+      
+    destroy: ->
+      clearTimeout(@_updateInterval)
+      super()
 
   class ZWayMotionSensor extends env.devices.PresenceSensor
 
@@ -280,7 +303,7 @@ module.exports = (env) ->
       @_presence = lastState?.presence?.value or false
 
       @readPresenceValue()
-      setInterval( ( => @readPresenceValue().catch( (error) =>
+      @_updateInterval = setInterval( ( => @readPresenceValue().catch( (error) =>
         env.logger.error("error updating sensor value ", error.message)
       )
       ), @config.interval * 1000)
@@ -300,6 +323,10 @@ module.exports = (env) ->
         @setPresenceValue value
         return @_presence
       )
+    
+    destroy: ->
+      clearTimeout(@_updateInterval)
+      super()
 
   class ZWayShutterController extends env.devices.ShutterController
 
@@ -312,7 +339,7 @@ module.exports = (env) ->
       updateValue = =>
         if @config.interval > 0
           @getPosition().finally( =>
-            setTimeout(updateValue, @config.interval * 1000)
+            @_updateInterval = setTimeout(updateValue, @config.interval * 1000)
           )
 
       super()
@@ -372,6 +399,10 @@ module.exports = (env) ->
         env.logger.error("position update failed with #{e.message}")
         return @_dimlevel
       )
+      
+    destroy: ->
+      clearTimeout(@_updateInterval)
+      super()
 
   plugin = new ZWayPlugin
   return plugin
