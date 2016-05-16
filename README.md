@@ -10,6 +10,8 @@ You can load the plugin by editing your `config.json` to include:
     {
        "plugin": "z-way",
        "hostname": "10.10.7.46" // set hostname if necessary (localhost by default)
+       "username": "admin", // Username for your z-way webinterface (default admin)
+       "password": "P4$$w0Rd" // Password for your z-way webinterface
     }
 
 Devices can be defined by adding them to the `devices` section in the config file.

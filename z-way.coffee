@@ -24,6 +24,16 @@ module.exports = (env) ->
       env.logger.info("initialized pimatic-z-way with hostname " + @config.hostname)
 
       deviceConfigDef = require("./device-config-schema")
+      @options =
+        'json': true
+        'simple': true
+        'resolveWithFullResponse': false
+        'jar': true
+
+      @authenticated = false
+
+      env.logger.debug "registering devices"
+
       @framework.deviceManager.registerDeviceClass("ZWaySwitch", {
         configDef: deviceConfigDef.ZWaySwitch,
         createCallback: (config) => new ZWaySwitch(config)
@@ -60,12 +70,62 @@ module.exports = (env) ->
     sendCommand: (virtualDeviceId, command) ->
       address = "http://" + @config.hostname + ":8083/ZAutomation/api/v1/devices/" + virtualDeviceId + "/command/" + command
       env.logger.debug("sending command " + address)
-      return rp(address)
+
+      @logIn()
+      .then ()=>
+        commandAnswer = rp address, @options
+        .then (json) =>
+          try
+            #needed because json could contain circular reference
+            env.logger.debug "received command answer:#{JSON.stringify(json)}"
+          catch e
+            env.logger.debug "received command answer"
+
+          return json
+
+        return commandAnswer
 
     getDeviceDetails: (virtualDeviceId) ->
       address = "http://" + @config.hostname + ":8083/ZAutomation/api/v1/devices/" + virtualDeviceId
       env.logger.debug("fetching device details " + address)
-      return rp(address).then(JSON.parse)
+
+      @logIn()
+      .then ()=>
+        deviceDetails = rp address, @options
+        .then (json) =>
+          try
+            #needed because json could contain circular reference
+            env.logger.debug "received device details:#{JSON.stringify(json)}"
+          catch e
+            env.logger.debug "received device details"
+
+          return json
+
+        return deviceDetails
+
+    logIn: ()->
+      if @authenticated then return Promise.resolve()
+
+      address = "http://" + @config.hostname + ":8083/ZAutomation/api/v1/login"
+      env.logger.debug("logging in " + address)
+
+      authOptions = JSON.parse(JSON.stringify(@options));
+
+      authOptions.body =
+        'login': @config.username
+        'password': @config.password
+
+      authOptions.method = 'POST'
+
+      loginRequest = rp address, authOptions
+      .then (json) =>
+        env.logger.debug "login sucess: #{json}"
+        @authenticated = true
+        return json
+      .catch (error) =>
+        env.logger.debug "error logging in: #{error}"
+
+      return loginRequest
 
     sleep: (ms) ->
       start = new Date().getTime()
@@ -110,7 +170,7 @@ module.exports = (env) ->
         env.logger.error("state update failed with " + e.message)
         return @_state
       )
-    
+
     destroy: ->
       clearTimeout(@_updateInterval)
       super()
@@ -149,7 +209,7 @@ module.exports = (env) ->
         env.logger.error("dim level update failed with #{e.message}")
         return @_dimlevel
       )
-    
+
     destroy: ->
       clearTimeout(@_updateInterval)
       super()
@@ -185,7 +245,7 @@ module.exports = (env) ->
         )
       ), @config.interval * 1000)
       super()
-    
+
     destroy: ->
       clearTimeout(@_updateInterval)
       super()
@@ -221,7 +281,7 @@ module.exports = (env) ->
       )
 
     getContact: () -> if @_contact? then Promise.resolve(@_contact) else @readContactValue()
-    
+
     destroy: ->
       clearTimeout(@_updateInterval)
       super()
@@ -253,7 +313,7 @@ module.exports = (env) ->
         )
       ), @config.interval * 1000)
       super()
-      
+
     destroy: ->
       clearTimeout(@_updateInterval)
       super()
@@ -289,7 +349,7 @@ module.exports = (env) ->
         )
       ), @config.interval * 1000)
       super()
-      
+
     destroy: ->
       clearTimeout(@_updateInterval)
       super()
@@ -323,7 +383,7 @@ module.exports = (env) ->
         @setPresenceValue value
         return @_presence
       )
-    
+
     destroy: ->
       clearTimeout(@_updateInterval)
       super()
@@ -399,7 +459,7 @@ module.exports = (env) ->
         env.logger.error("position update failed with #{e.message}")
         return @_dimlevel
       )
-      
+
     destroy: ->
       clearTimeout(@_updateInterval)
       super()
