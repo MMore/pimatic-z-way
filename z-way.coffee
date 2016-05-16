@@ -77,7 +77,7 @@ module.exports = (env) ->
         .then (json) =>
           try
             #needed because json could contain circular reference
-            env.logger.debug "received command answer:#{JSON.srtingify(json)}"
+            env.logger.debug "received command answer:#{JSON.stringify(json)}"
           catch e
             env.logger.debug "received command answer"
 
@@ -110,7 +110,7 @@ module.exports = (env) ->
       env.logger.debug("logging in " + address)
 
       authOptions = JSON.parse(JSON.stringify(@options));
-      
+
       authOptions.body =
         'login': @config.username
         'password': @config.password
@@ -170,7 +170,7 @@ module.exports = (env) ->
         env.logger.error("state update failed with " + e.message)
         return @_state
       )
-    
+
     destroy: ->
       clearTimeout(@_updateInterval)
       super()
@@ -209,7 +209,7 @@ module.exports = (env) ->
         env.logger.error("dim level update failed with #{e.message}")
         return @_dimlevel
       )
-    
+
     destroy: ->
       clearTimeout(@_updateInterval)
       super()
@@ -245,7 +245,7 @@ module.exports = (env) ->
         )
       ), @config.interval * 1000)
       super()
-    
+
     destroy: ->
       clearTimeout(@_updateInterval)
       super()
@@ -281,7 +281,7 @@ module.exports = (env) ->
       )
 
     getContact: () -> if @_contact? then Promise.resolve(@_contact) else @readContactValue()
-    
+
     destroy: ->
       clearTimeout(@_updateInterval)
       super()
@@ -313,7 +313,7 @@ module.exports = (env) ->
         )
       ), @config.interval * 1000)
       super()
-      
+
     destroy: ->
       clearTimeout(@_updateInterval)
       super()
@@ -349,7 +349,7 @@ module.exports = (env) ->
         )
       ), @config.interval * 1000)
       super()
-      
+
     destroy: ->
       clearTimeout(@_updateInterval)
       super()
@@ -383,7 +383,7 @@ module.exports = (env) ->
         @setPresenceValue value
         return @_presence
       )
-    
+
     destroy: ->
       clearTimeout(@_updateInterval)
       super()
@@ -459,7 +459,7 @@ module.exports = (env) ->
         env.logger.error("position update failed with #{e.message}")
         return @_dimlevel
       )
-      
+
     destroy: ->
       clearTimeout(@_updateInterval)
       super()
