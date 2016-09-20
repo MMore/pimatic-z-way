@@ -50,6 +50,10 @@ module.exports = (env) ->
         configDef: deviceConfigDef.ZWayLuminiscenceSensor,
         createCallback: (config) => new ZWayLuminiscenceSensor(config)
       })
+      @framework.deviceManager.registerDeviceClass("ZWayHumidSensor", {
+        configDef: deviceConfigDef.ZWayLuminiscenceSensor,
+        createCallback: (config) => new ZWayLuminiscenceSensor(config)
+      })
       @framework.deviceManager.registerDeviceClass("ZWayDoorWindowSensor", {
         configDef: deviceConfigDef.ZWayDoorWindowSensor,
         createCallback: (config) => new ZWayDoorWindowSensor(config)
