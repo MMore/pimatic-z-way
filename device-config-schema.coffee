@@ -1,4 +1,6 @@
-module.exports = {
+module.exports = {this is a teojstspoerjgw]pojtg
+sjrt
+
   title: "pimatic-z-way device config options"
   ZWaySwitch: {
     title: "ZWaySwitch config options"
