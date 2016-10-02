@@ -84,6 +84,11 @@ module.exports = (env) ->
           return json
 
         return commandAnswer
+      .catch (error)=>
+        if error.message.match(401)
+          #looks like authentication failed
+          env.logger.error ("reseting authentication")
+          @authenticated = false
 
     getDeviceDetails: (virtualDeviceId) ->
       address = "http://" + @config.hostname + ":8083/ZAutomation/api/v1/devices/" + virtualDeviceId
@@ -102,6 +107,13 @@ module.exports = (env) ->
           return json
 
         return deviceDetails
+      .catch (error)=>
+        if error.message.match(401)
+          #looks like authentication failed
+          env.logger.error ("reseting authentication")
+          @authenticated = false
+
+
 
     logIn: ()->
       if @authenticated then return Promise.resolve()
