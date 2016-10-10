@@ -86,7 +86,6 @@ module.exports = (env) ->
         return commandAnswer
       .catch (error)=>
         if error.message.match(401)
-          #looks like authentication failed
           env.logger.error ("reseting authentication")
           @authenticated = false
 
@@ -109,7 +108,6 @@ module.exports = (env) ->
         return deviceDetails
       .catch (error)=>
         if error.message.match(401)
-          #looks like authentication failed
           env.logger.error ("reseting authentication")
           @authenticated = false
 
