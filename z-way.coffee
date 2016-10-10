@@ -91,14 +91,13 @@ module.exports = (env) ->
 
     getDeviceDetails: (virtualDeviceId) ->
       address = "http://" + @config.hostname + ":8083/ZAutomation/api/v1/devices/" + virtualDeviceId
-      env.logger.debug("fetching device details " + address)
 
       @logIn()
       .then ()=>
         deviceDetails = rp address, @options
         .then (json) =>
           try
-            #needed because json could contain circular reference
+            # needed because json could contain circular reference
             env.logger.debug "received device details:#{JSON.stringify(json)}"
           catch e
             env.logger.debug "received device details"
@@ -129,7 +128,7 @@ module.exports = (env) ->
 
       loginRequest = rp address, authOptions
       .then (json) =>
-        env.logger.debug "login sucess: #{json}"
+        env.logger.debug "login success: #{json}"
         @authenticated = true
         return json
       .catch (error) =>
