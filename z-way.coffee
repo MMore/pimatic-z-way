@@ -163,9 +163,8 @@ module.exports = (env) ->
       command = if state then "on" else "off"
       return plugin.sendCommand(@virtualDeviceId, command).then( =>
         @_setState(state)
-        #2 seconds to wait before the switch status is read
-        plugin.sleep 2000
-        #get switch status from zway
+        # wait before the switch status is read
+        plugin.sleep 1500
         @getState()
       ).catch( (e) =>
         plugin.logError("state change failed with #{e.message}", @name, @id)
