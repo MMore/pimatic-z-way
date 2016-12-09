@@ -64,8 +64,8 @@ module.exports = {
         type: "number"
         default: 60
   }
-  ZWayLuminiscenceSensor: {
-    title: "ZWayLuminiscenceSensor config options"
+  ZWayLuminescenceSensor: {
+    title: "ZWayLuminescenceSensor config options"
     type: "object"
     properties:
       virtualDeviceId:

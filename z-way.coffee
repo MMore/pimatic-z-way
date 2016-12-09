@@ -46,9 +46,9 @@ module.exports = (env) ->
         configDef: deviceConfigDef.ZWayPowerSensor,
         createCallback: (config) => new ZWayPowerSensor(config)
       })
-      @framework.deviceManager.registerDeviceClass("ZWayLuminiscenceSensor", {
-        configDef: deviceConfigDef.ZWayLuminiscenceSensor,
-        createCallback: (config) => new ZWayLuminiscenceSensor(config)
+      @framework.deviceManager.registerDeviceClass("ZWayLuminescenceSensor", {
+        configDef: deviceConfigDef.ZWayLuminescenceSensor,
+        createCallback: (config) => new ZWayLuminescenceSensor(config)
       })
       @framework.deviceManager.registerDeviceClass("ZWayDoorWindowSensor", {
         configDef: deviceConfigDef.ZWayDoorWindowSensor,
@@ -327,7 +327,7 @@ module.exports = (env) ->
       clearTimeout(@_updateInterval)
       super()
 
-  class ZWayLuminiscenceSensor extends env.devices.Sensor
+  class ZWayLuminescenceSensor extends env.devices.Sensor
 
     constructor: (@config) ->
       @id = @config.id
@@ -335,9 +335,9 @@ module.exports = (env) ->
       @virtualDeviceId = @config.virtualDeviceId
 
       @attributes = {}
-      sensor = "luminiscence"
+      sensor = "luminescence"
       @attributes[sensor] = {}
-      @attributes[sensor].description = "Current Luminiscence"
+      @attributes[sensor].description = "Current Luminescence"
       @attributes[sensor].type = "number"
 
       getter = ( =>
