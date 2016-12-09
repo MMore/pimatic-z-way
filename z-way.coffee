@@ -50,6 +50,10 @@ module.exports = (env) ->
         configDef: deviceConfigDef.ZWayLuminescenceSensor,
         createCallback: (config) => new ZWayLuminescenceSensor(config)
       })
+      @framework.deviceManager.registerDeviceClass("ZWayHumidSensor", {
+        configDef: deviceConfigDef.ZWayHumidSensor,
+        createCallback: (config) => new ZWayHumidSensor(config)
+      })
       @framework.deviceManager.registerDeviceClass("ZWayDoorWindowSensor", {
         configDef: deviceConfigDef.ZWayDoorWindowSensor,
         createCallback: (config) => new ZWayDoorWindowSensor(config)
@@ -361,6 +365,38 @@ module.exports = (env) ->
 
     destroy: ->
       clearTimeout(@_updateInterval)
+      super()
+
+  class ZWayHumidSensor extends env.devices.Sensor
+
+    constructor: (@config) ->
+      @id = @config.id
+      @name = @config.name
+      @virtualDeviceId = @config.virtualDeviceId
+
+      @attributes = {}
+      sensor = "luminiscence"
+      @attributes[sensor] = {}
+      @attributes[sensor].description = "Current Luminiscence"
+      @attributes[sensor].type = "number"
+
+      getter = ( =>
+        return plugin.getDeviceDetails(@virtualDeviceId).then( (json) =>
+          val = json.data.metrics.level
+          unit = json.data.metrics.scaleTitle
+          @attributes[sensor].unit = unit
+          return val
+        )
+      )
+
+      @_createGetter(sensor, getter)
+      setInterval( ( =>
+        getter().then( (value) =>
+          @emit sensor, value
+        ).catch( (error) =>
+          env.logger.error("error updating sensor value for #{sensor}", error.message)
+        )
+      ), @config.interval * 1000)
       super()
 
   class ZWayMotionSensor extends env.devices.PresenceSensor
