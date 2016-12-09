@@ -13,7 +13,7 @@
     "z-way.coffee",
     "README.md"
   ],
-  "version": "1.4.1",
+  "version": "1.4.2",
   "homepage": "https://github.com/MMore/pimatic-z-way",
   "repository": {
     "type": "git",
