@@ -110,8 +110,6 @@ module.exports = (env) ->
           env.logger.error ("reseting authentication")
           @authenticated = false
 
-
-
     logIn: ()->
       if @authenticated then return Promise.resolve()
 
@@ -140,6 +138,9 @@ module.exports = (env) ->
       start = new Date().getTime()
       continue while new Date().getTime() - start < ms
 
+    logError: (msg, sensorTitle, deviceId) ->
+      env.logger.error("#{deviceId} (#{sensorTitle}):", msg)
+
 
   class ZWaySwitch extends env.devices.PowerSwitch
 
@@ -167,7 +168,7 @@ module.exports = (env) ->
         #get switch status from zway
         @getState()
       ).catch( (e) =>
-        env.logger.error("state change failed with " + e.message)
+        plugin.logError("state change failed with #{e.message}", @name, @id)
       )
 
     getState: () ->
@@ -176,7 +177,7 @@ module.exports = (env) ->
         @_setState(state == "on")
         return @_state
       ).catch( (e) =>
-        env.logger.error("state update failed with " + e.message)
+        plugin.logError("state update failed with #{e.message}", @name, @id)
         return @_state
       )
 
@@ -206,7 +207,7 @@ module.exports = (env) ->
       return plugin.sendCommand(@virtualDeviceId, "exact?level=#{level}").then( =>
         @_setDimlevel(level)
       ).catch( (e) =>
-        env.logger.error("dim level change failed with #{e.message}")
+        plugin.logError("dim level change failed with #{e.message}", @name, @id)
       )
 
     getDimlevel: () ->
@@ -215,7 +216,7 @@ module.exports = (env) ->
         @_setDimlevel(level)
         return @_dimlevel
       ).catch( (e) =>
-        env.logger.error("dim level update failed with #{e.message}")
+        plugin.logError("dim level update failed with #{e.message}", @name, @id)
         return @_dimlevel
       )
 
@@ -250,7 +251,7 @@ module.exports = (env) ->
         getter().then( (value) =>
           @emit sensor, value
         ).catch( (error) =>
-          env.logger.error("error updating sensor value for #{sensor}", error.message)
+          plugin.logError("updating sensor value failed with #{error.message}", @name, @id)
         )
       ), @config.interval * 1000)
       super()
@@ -269,7 +270,7 @@ module.exports = (env) ->
 
       @readContactValue()
       @_updateInterval = setInterval( ( => @readContactValue().catch( (error) =>
-        env.logger.error("error updating sensor value ", error.message)
+        plugin.logError("updating sensor value failed with #{error.message}", @name, @id)
       )
       ), @config.interval * 1000)
       super()
@@ -318,7 +319,7 @@ module.exports = (env) ->
         getter().then( (value) =>
           @emit sensor, value
         ).catch( (error) =>
-          env.logger.error("error updating sensor value for #{sensor}", error.message)
+          plugin.logError("updating sensor value failed with #{error.message}", @name, @id)
         )
       ), @config.interval * 1000)
       super()
@@ -354,7 +355,7 @@ module.exports = (env) ->
         getter().then( (value) =>
           @emit sensor, value
         ).catch( (error) =>
-          env.logger.error("error updating sensor value for #{sensor}", error.message)
+          plugin.logError("updating sensor value failed with #{error.message}", @name, @id)
         )
       ), @config.interval * 1000)
       super()
@@ -373,7 +374,7 @@ module.exports = (env) ->
 
       @readPresenceValue()
       @_updateInterval = setInterval( ( => @readPresenceValue().catch( (error) =>
-        env.logger.error("error updating sensor value ", error.message)
+        plugin.logError("updating sensor value failed with #{error.message}", @name, @id)
       )
       ), @config.interval * 1000)
       super()
@@ -421,7 +422,7 @@ module.exports = (env) ->
         @_setPosition('stopped')
         @emit "position", @_position
       ).catch( (e) =>
-        env.logger.error("stop failed with " + e.message)
+        plugin.logError("stop failed with #{e.message}", @name, @id)
       )
 
     moveUp: ->
@@ -431,7 +432,7 @@ module.exports = (env) ->
         @_setPosition('up')
         @emit "position", @_position
       ).catch( (e) =>
-        env.logger.error("move up failed with " + e.message)
+        plugin.logError("move up failed with #{e.message}", @name, @id)
       )
 
     moveDown: ->
@@ -441,7 +442,7 @@ module.exports = (env) ->
         @_setPosition('down')
         @emit "position", @_position
       ).catch( (e) =>
-        env.logger.error("move down failed with " + e.message)
+        plugin.logError("move down failed with #{e.message}", @name, @id)
       )
 
     moveToPosition: (position) ->
@@ -465,7 +466,7 @@ module.exports = (env) ->
         @emit "position", @_position
         return @_position
       ).catch( (e) =>
-        env.logger.error("position update failed with #{e.message}")
+        plugin.logError("position update failed with #{e.message}", @name, @id)
         return @_dimlevel
       )
 
