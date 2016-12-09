@@ -50,9 +50,9 @@ module.exports = (env) ->
         configDef: deviceConfigDef.ZWayLuminescenceSensor,
         createCallback: (config) => new ZWayLuminescenceSensor(config)
       })
-      @framework.deviceManager.registerDeviceClass("ZWayHumidSensor", {
-        configDef: deviceConfigDef.ZWayHumidSensor,
-        createCallback: (config) => new ZWayHumidSensor(config)
+      @framework.deviceManager.registerDeviceClass("ZWayHumiditySensor", {
+        configDef: deviceConfigDef.ZWayHumiditySensor,
+        createCallback: (config) => new ZWayHumiditySensor(config)
       })
       @framework.deviceManager.registerDeviceClass("ZWayDoorWindowSensor", {
         configDef: deviceConfigDef.ZWayDoorWindowSensor,
@@ -354,7 +354,7 @@ module.exports = (env) ->
       )
 
       @_createGetter(sensor, getter)
-      setInterval( ( =>
+      @_updateInterval = setInterval( ( =>
         getter().then( (value) =>
           @emit sensor, value
         ).catch( (error) =>
@@ -367,7 +367,7 @@ module.exports = (env) ->
       clearTimeout(@_updateInterval)
       super()
 
-  class ZWayHumidSensor extends env.devices.Sensor
+  class ZWayHumiditySensor extends env.devices.Sensor
 
     constructor: (@config) ->
       @id = @config.id
@@ -375,9 +375,9 @@ module.exports = (env) ->
       @virtualDeviceId = @config.virtualDeviceId
 
       @attributes = {}
-      sensor = "luminiscence"
+      sensor = "humidity"
       @attributes[sensor] = {}
-      @attributes[sensor].description = "Current Luminiscence"
+      @attributes[sensor].description = "Current Humidity"
       @attributes[sensor].type = "number"
 
       getter = ( =>
@@ -390,13 +390,17 @@ module.exports = (env) ->
       )
 
       @_createGetter(sensor, getter)
-      setInterval( ( =>
+      @_updateInterval = setInterval( ( =>
         getter().then( (value) =>
           @emit sensor, value
         ).catch( (error) =>
-          env.logger.error("error updating sensor value for #{sensor}", error.message)
+          plugin.logError("updating sensor value failed with #{error.message}", @name, @id)
         )
       ), @config.interval * 1000)
+      super()
+
+    destroy: ->
+      clearTimeout(@_updateInterval)
       super()
 
   class ZWayMotionSensor extends env.devices.PresenceSensor

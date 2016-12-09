@@ -76,8 +76,8 @@ module.exports = {
         type: "number"
         default: 60
   }
-  ZWayHumidSensor: {
-    title: "ZWayHumidSensor config options"
+  ZWayHumiditySensor: {
+    title: "ZWayHumiditySensor config options"
     type: "object"
     properties:
       virtualDeviceId:

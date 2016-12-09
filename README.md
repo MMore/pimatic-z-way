@@ -44,10 +44,10 @@ Set the `class` attribute to one of the following classes. For example:
       "virtualDeviceId": "ZWayVDev_zway_2-0-49"
     },
     {
-      "class": "ZWayHumidSensor",
+      "class": "ZWayHumiditySensor",
       "id": "fibaro_Humidity_sensor",
-      "name": “Humidity Sensor",
-      "virtualDeviceId": "ZWayVDev_zway_2-0-51”
+      "name": "Humidity Sensor",
+      "virtualDeviceId": "ZWayVDev_zway_2-0-51"
     },
     {
       "class": "ZWayDoorWindowSensor",
