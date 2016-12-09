@@ -42,6 +42,10 @@ module.exports = (env) ->
         configDef: deviceConfigDef.ZWayDimmer,
         createCallback: (config) => new ZWayDimmer(config)
       })
+      @framework.deviceManager.registerDeviceClass("ZWayThermostat", {
+        configDef: deviceConfigDef.ZWayThermostat,
+        createCallback: (config, lastState) => new ZWayThermostat(config, lastState)
+      })
       @framework.deviceManager.registerDeviceClass("ZWayPowerSensor", {
         configDef: deviceConfigDef.ZWayPowerSensor,
         createCallback: (config) => new ZWayPowerSensor(config)
@@ -80,7 +84,7 @@ module.exports = (env) ->
         commandAnswer = rp address, @options
         .then (json) =>
           try
-            #needed because json could contain circular reference
+            # needed because json could contain circular reference
             env.logger.debug "received command answer:#{JSON.stringify(json)}"
           catch e
             env.logger.debug "received command answer"
@@ -111,7 +115,7 @@ module.exports = (env) ->
         return deviceDetails
       .catch (error)=>
         if error.message.match(401)
-          env.logger.error ("reseting authentication")
+          env.logger.error ("resetting authentication")
           @authenticated = false
 
     logIn: ()->
@@ -222,6 +226,52 @@ module.exports = (env) ->
         plugin.logError("dim level update failed with #{e.message}", @name, @id)
         return @_dimlevel
       )
+
+    destroy: ->
+      clearTimeout(@_updateInterval)
+      super()
+
+  class ZWayThermostat extends env.devices.HeatingThermostat
+
+    constructor: (@config, lastState) ->
+      @id = @config.id
+      @name = @config.name
+      @virtualDeviceId = @config.virtualDeviceId
+      @_temperatureSetpoint = lastState?.temperatureSetpoint?.value
+      @_mode = lastState?.mode?.value or "auto"
+      @_battery = lastState?.battery?.value or "ok"
+      @_synced = true
+
+      updateValue = =>
+        if @config.interval > 0
+          @getTemperatureSetpoint().finally( =>
+            @_updateInterval = setTimeout(updateValue, @config.interval * 1000)
+          )
+
+      super()
+      updateValue()
+
+    changeTemperatureTo: (setpoint) ->
+      if @_temperatureSetpoint is setpoint then return Promise.resolve()
+      return plugin.sendCommand(@virtualDeviceId, "exact?level=#{setpoint}").then( =>
+        @_setSetpoint(setpoint)
+      ).catch( (e) =>
+        plugin.logError("temperature setpoint change failed with #{e.message}", @name, @id)
+      )
+
+    getTemperatureSetpoint: () ->
+      return plugin.getDeviceDetails(@virtualDeviceId).then( (json) =>
+        level = json.data.metrics.level
+        @_setSetpoint(level)
+        return @_temperatureSetpoint
+      ).catch( (e) =>
+        plugin.logError("temperature setpoint update failed with #{e.message}", @name, @id)
+        return @_temperatureSetpoint
+      )
+
+    changeModeTo: (mode) ->
+      plugin.logError("setting mode not yet supported", @name, @id)
+      return Promise.resolve()
 
     destroy: ->
       clearTimeout(@_updateInterval)

@@ -24,6 +24,42 @@ module.exports = {
         type: "number"
         default: 0
   }
+  ZWayThermostat: {
+    title: "ZWayThermostat config options"
+    type: "object"
+    properties:
+      virtualDeviceId:
+        description: "Virtual Device ID (call `curl http://HOSTNAME:8083/ZAutomation/api/v1/devices` for a list)"
+        type: "string"
+      interval:
+        description: "Time interval (in s) after a state update is requested. If 0 then the state will not updated automatically."
+        type: "number"
+        default: 60
+      comfyTemp:
+        description: "The defined comfy temperature"
+        type: "number"
+        default: 21
+      ecoTemp:
+        description: "The defined eco temperature"
+        type: "number"
+        default: 17
+      guiShowModeControl:
+        description: "Show the mode buttons in the gui"
+        type: "boolean"
+        default: false
+      guiShowPresetControl:
+        description: "Show the preset temperatures in the gui"
+        type: "boolean"
+        default: true
+      guiShowTemperatureInput:
+        description: "Show the temperature input spinbox in the gui"
+        type: "boolean"
+        default: true
+      guiShowValvePosition:
+        description: "Show the valve position in the gui"
+        type: "boolean"
+        default: true
+  }
   ZWayPowerSensor: {
     title: "ZWayPowerSensor config options"
     type: "object"
