@@ -3,6 +3,7 @@ module.exports = {
   ZWaySwitch: {
     title: "ZWaySwitch config options"
     type: "object"
+    extensions: ["xLink", "xConfirm", "xOnLabel", "xOffLabel"]
     properties:
       virtualDeviceId:
         description: "Virtual Device ID (call `curl http://HOSTNAME:8083/ZAutomation/api/v1/devices` for a list)"
@@ -15,6 +16,7 @@ module.exports = {
   ZWayDimmer: {
     title: "ZWayDimmer config options"
     type: "object"
+    extensions: ["xLink"]
     properties:
       virtualDeviceId:
         description: "Virtual Device ID (call `curl http://HOSTNAME:8083/ZAutomation/api/v1/devices` for a list)"
@@ -27,6 +29,7 @@ module.exports = {
   ZWayThermostat: {
     title: "ZWayThermostat config options"
     type: "object"
+    extensions: ["xLink", "xAttributeOptions"]
     properties:
       virtualDeviceId:
         description: "Virtual Device ID (call `curl http://HOSTNAME:8083/ZAutomation/api/v1/devices` for a list)"
@@ -63,6 +66,7 @@ module.exports = {
   ZWayPowerSensor: {
     title: "ZWayPowerSensor config options"
     type: "object"
+    extensions: ["xLink", "xAttributeOptions"]
     properties:
       virtualDeviceId:
         description: "Virtual Device ID (call `curl http://HOSTNAME:8083/ZAutomation/api/v1/devices` for a list)"
@@ -75,6 +79,7 @@ module.exports = {
   ZWayDoorWindowSensor: {
     title: "ZWayDoorWindowSensor config options"
     type: "object"
+    extensions: ["xLink", "xClosedLabel", "xOpenedLabel"]
     properties:
       virtualDeviceId:
         description: "Virtual Device ID (call `curl http://HOSTNAME:8083/ZAutomation/api/v1/devices` for a list)"
@@ -91,6 +96,7 @@ module.exports = {
   ZWayTemperatureSensor: {
     title: "ZWayTemperatureSensor config options"
     type: "object"
+    extensions: ["xLink", "xAttributeOptions"]
     properties:
       virtualDeviceId:
         description: "Virtual Device ID (call `curl http://HOSTNAME:8083/ZAutomation/api/v1/devices` for a list)"
@@ -103,6 +109,7 @@ module.exports = {
   ZWayLuminescenceSensor: {
     title: "ZWayLuminescenceSensor config options"
     type: "object"
+    extensions: ["xLink", "xAttributeOptions"]
     properties:
       virtualDeviceId:
         description: "Virtual Device ID (call `curl http://HOSTNAME:8083/ZAutomation/api/v1/devices` for a list)"
@@ -115,6 +122,7 @@ module.exports = {
   ZWayHumiditySensor: {
     title: "ZWayHumiditySensor config options"
     type: "object"
+    extensions: ["xLink", "xAttributeOptions"]
     properties:
       virtualDeviceId:
         description: "Virtual Device ID (call `curl http://HOSTNAME:8083/ZAutomation/api/v1/devices` for a list)"
@@ -127,6 +135,7 @@ module.exports = {
   ZWayMotionSensor: {
     title: "ZWayMotionSensor config options"
     type: "object"
+    extensions: ["xLink", "xPresentLabel", "xAbsentLabel"]
     properties:
       virtualDeviceId:
         description: "Virtual Device ID (call `curl http://HOSTNAME:8083/ZAutomation/api/v1/devices` for a list)"
@@ -143,6 +152,7 @@ module.exports = {
   ZWayShutterController: {
     title: "ZWayShutterController config options"
     type: "object"
+    extensions: ["xLink", "xConfirm"]
     properties:
       virtualDeviceId:
         description: "Virtual Device ID (call `curl http://HOSTNAME:8083/ZAutomation/api/v1/devices` for a list)"
